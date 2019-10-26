@@ -1,53 +1,71 @@
 package Tree;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
+import java.lang.Math;
 
-public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E>{
-    SemiSplayTree<E> right;
-    SemiSplayTree<E> left;
-    SemiSplayTree<E> parent;
-    E value;
+public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
-    public SemiSplayTree()  {
+    public SemiSplayTree<E> right;
+    public SemiSplayTree<E> left;
+    private SemiSplayTree<E> parent;
 
+    public E value;
+    private int splayGrootte;
+    private int size;
+
+    @Contract(pure = true)
+    public SemiSplayTree(int splayGrootte) {
+        assert (splayGrootte >= 3);
+        size = 0;
+        this.splayGrootte = splayGrootte;
     }
 
-    public SemiSplayTree(E value, SemiSplayTree<E> parent) {
-        this();
+    @Contract(pure = true)
+    public SemiSplayTree(E value, SemiSplayTree<E> parent, int splayGrootte) {
+        this(splayGrootte);
         this.parent = parent;
         this.value = value;
     }
-
-    private int splayGrootte;
-    //todo assert(splayGrootte >= 3)
 
     @Override
     public boolean add(E e) {
         if (value == null) {
             value = e;
+            size++;
             return true;
-        } else {
-            int cmp = e.compareTo(this.value);
-            if (cmp < 0) {
-                if (this.left == null)
-                    this.left = new SemiSplayTree<E>(e, this);
-                else
-                    return this.left.add(e);
-                return true;
-            } else if (cmp > 0) {
-                if (this.right == null)
-                    this.right = new SemiSplayTree<E>(e, this);
-                else
-                    return this.right.add(e);
+        }
+        int cmp = e.compareTo(this.value);
+        if (cmp < 0) {
+            if (this.left == null) {
+                this.left = new SemiSplayTree<E>(e, this, splayGrootte);
                 return true;
             } else {
-                return false;
+                boolean done = this.left.add(e);
+                if (done)
+                    size++;
+                return done;
             }
+        } else if (cmp > 0) {
+            if (this.right == null) {
+                this.right = new SemiSplayTree<E>(e, this, splayGrootte);
+                size++;
+                return true;
+            } else {
+                boolean done = this.right.add(e);
+                if (done)
+                    size++;
+                return done;
+            }
+        } else {
+            return false;
         }
     }
 
     @Override
-    public boolean contains(E e) {
+    public boolean contains(@NotNull E e) {
         int cmp = e.compareTo(this.value);
         if (cmp == 0) return true;
 
@@ -56,68 +74,97 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E>{
     }
 
     @Override
-    public boolean remove(E e) {
+    public boolean remove(@NotNull E e) {
         int cmp = e.compareTo(this.value);
-        if (cmp == 0){
+        if (cmp == 0) {
             removeThis();
             return true;
         }
         if (cmp < 0) {
-            if (left != null){
-                return left.remove(e);
-            }else{
+            if (left != null) {
+                boolean done = left.remove(e);
+                if (done) {
+                    this.size--;
+                }
+                return done;
+            } else {
                 return false;
             }
         }
-        if (right != null){
-            return right.remove(e);
+        if (right != null) {
+            boolean done = right.remove(e);
+            if (done) {
+                this.size--;
+            }
+            return done;
         }
         return false;
     }
 
-    public void removeChild(SemiSplayTree<E> child){
+    public void removeChild(@NotNull SemiSplayTree<E> child) {
         if (child.equals(right)) right = null;
         if (child.equals(left)) left = null;
     }
 
     private void removeThis() {
-        if (right == null && left == null){
-            parent.removeChild(this);
-        }else{
-            E grootste = zoekGrootsteLinks();
-            this.value = grootste;
+        if (right == null && left == null) {
+            if (parent == null) {
+                value = null;
+                this.size--;
+            } else {
+                parent.removeChild(this);
+            }
+        } else {
+            E grootste;
+            if (left == null) {
+                grootste = right.zoekKleinste();
+            } else {
+                grootste = left.zoekGrootste();
+            }
             remove(grootste);
+            this.value = grootste;
         }
     }
 
-    public E zoekGrootsteLinks(){
-        if (right != null){
-            return right.zoekGrootsteLinks();
+    public E zoekKleinste() {
+        if (left != null) {
+            return left.zoekKleinste();
+        }
+        return this.value;
+    }
+
+    public E zoekGrootste() {
+        if (right != null) {
+            return right.zoekGrootste();
         }
         return this.value;
     }
 
     @Override
     public int size() {
-        int size = 1;
-        if (right != null) size += right.size();
-        if (left != null) size += left.size();
-        return size;
+        return this.size;
     }
 
     @Override
     public int depth() {
-        if (right == null){
-
+        int depth_right = 0;
+        int depth_left = 0;
+        if (right != null) {
+            depth_right = right.depth();
         }
-        if (left == null){
-
+        if (left != null) {
+            depth_left = left.depth();
         }
-        return 0;
+        if (parent != null) {
+            return Math.max(depth_left, depth_right) + 1;
+        } else {
+            return Math.max(depth_left, depth_right);
+        }
     }
 
+    @NotNull
     @Override
-    public Iterator iterator() {
-        return null;
+    public Iterator<E> iterator() {
+        return new SemiSplayTreeIterator<>(this);
     }
 }
