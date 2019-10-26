@@ -24,7 +24,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     @Contract(pure = true)
-    public SemiSplayTree(E value, SemiSplayTree<E> parent, int splayGrootte) {
+    private SemiSplayTree(E value, SemiSplayTree<E> parent, int splayGrootte) {
         this(splayGrootte);
         this.parent = parent;
         this.value = value;
@@ -40,7 +40,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         int cmp = e.compareTo(this.value);
         if (cmp < 0) {
             if (this.left == null) {
-                this.left = new SemiSplayTree<E>(e, this, splayGrootte);
+                this.left = new SemiSplayTree<>(e, this, splayGrootte);
                 return true;
             } else {
                 boolean done = this.left.add(e);
@@ -50,7 +50,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
         } else if (cmp > 0) {
             if (this.right == null) {
-                this.right = new SemiSplayTree<E>(e, this, splayGrootte);
+                this.right = new SemiSplayTree<>(e, this, splayGrootte);
                 size++;
                 return true;
             } else {
@@ -101,7 +101,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         return false;
     }
 
-    public void removeChild(@NotNull SemiSplayTree<E> child) {
+    private void removeChild(@NotNull SemiSplayTree<E> child) {
         if (child.equals(right)) right = null;
         if (child.equals(left)) left = null;
     }
@@ -126,14 +126,14 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         }
     }
 
-    public E zoekKleinste() {
+    private E zoekKleinste() {
         if (left != null) {
             return left.zoekKleinste();
         }
         return this.value;
     }
 
-    public E zoekGrootste() {
+    private E zoekGrootste() {
         if (right != null) {
             return right.zoekGrootste();
         }

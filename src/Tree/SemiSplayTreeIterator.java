@@ -7,7 +7,7 @@ public class SemiSplayTreeIterator<E extends Comparable<E>> implements Iterator<
 
     private Stack<SemiSplayTree<E>> stack;
 
-    public SemiSplayTreeIterator(SemiSplayTree root) {
+    SemiSplayTreeIterator(SemiSplayTree<E> root) {
         stack = new Stack<>();
         while (root != null) {
             stack.push(root);
