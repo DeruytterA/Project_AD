@@ -1,8 +1,5 @@
 package Tree;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Iterator;
 import java.lang.Math;
 
@@ -16,14 +13,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     private int splayGrootte;
     private int size;
 
-    @Contract(pure = true)
     public SemiSplayTree(int splayGrootte) {
         assert (splayGrootte >= 3);
         size = 0;
         this.splayGrootte = splayGrootte;
     }
 
-    @Contract(pure = true)
     private SemiSplayTree(E value, SemiSplayTree<E> parent, int splayGrootte) {
         this(splayGrootte);
         this.parent = parent;
@@ -65,7 +60,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     @Override
-    public boolean contains(@NotNull E e) {
+    public boolean contains( E e) {
         int cmp = e.compareTo(this.value);
         if (cmp == 0) return true;
 
@@ -74,7 +69,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     @Override
-    public boolean remove(@NotNull E e) {
+    public boolean remove( E e) {
         int cmp = e.compareTo(this.value);
         if (cmp == 0) {
             removeThis();
@@ -101,7 +96,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         return false;
     }
 
-    private void removeChild(@NotNull SemiSplayTree<E> child) {
+    private void removeChild( SemiSplayTree<E> child) {
         if (child.equals(right)) right = null;
         if (child.equals(left)) left = null;
     }
@@ -162,7 +157,6 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         }
     }
 
-    @NotNull
     @Override
     public Iterator<E> iterator() {
         return new SemiSplayTreeIterator<>(this);
