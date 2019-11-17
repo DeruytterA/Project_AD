@@ -1,4 +1,4 @@
-package Tree;
+package semisplay;
 
 public interface SearchTree<E extends Comparable<E>> extends Iterable<E> {
 

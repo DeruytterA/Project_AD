@@ -1,5 +1,4 @@
-import Tree.SemiSplayTree;
-import org.jetbrains.annotations.NotNull;
+import semisplay.SemiSplayTree;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,13 +16,13 @@ public class TreeTest {
         for (Integer integer : list) {
             tree.add(integer);
         }
-        tree.remove(16);
-        Assert.assertEquals(4, tree.depth());
-        Assert.assertEquals(list.length - 1, tree.size());
+        Assert.assertEquals(true, tree.contains(16));
         printLevelOrder(tree);
+        Assert.assertEquals(5, tree.depth());
+        Assert.assertEquals(list.length, tree.size());
     }
 
-    @Test
+    //@Test
     public void testIterator() {
         SemiSplayTree<Integer> tree = new SemiSplayTree<>(3);
         Integer list[] = {16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31};
@@ -46,13 +45,12 @@ public class TreeTest {
         }
 
         Assert.assertEquals(0, tree.size());
-        printLevelOrder(tree);
     }
 
     @Test
     public void testGemiddeld() {
         Random random = new Random();
-        int amountToAdd = 10000;
+        int amountToAdd = 1000;
         int amountOfTests = 100;
         int time = 0;
         for (int i = 0; i < amountOfTests; i++) {
@@ -65,15 +63,36 @@ public class TreeTest {
         long startTime = System.nanoTime();
         SemiSplayTree<Integer> tree = new SemiSplayTree<>(3);
         for (int i = 0; i < amount; i++) {
-            tree.add(random.nextInt());
+            int toAdd = random.nextInt();
+            if (!tree.contains(toAdd)){
+                tree.add(toAdd);
+            }
         }
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
         return Math.toIntExact(duration / 1000);
     }
 
+    @Test
+    public void printTest(){
+        SemiSplayTree<Integer> tree = new SemiSplayTree<>(3);
+        tree.add(1);
+        tree.add(2);
+        tree.add(3);
+        tree.add(4);
+        tree.add(5);
+        tree.add(6);
+        tree.add(7);
+        tree.add(8);
+        tree.add(9);
+        tree.add(10);
+        for (Integer value:tree) {
+            System.out.println(value);
+        }
+        printLevelOrder(tree);
+    }
 
-    private void printLevelOrder(@NotNull SemiSplayTree root) {
+    private void printLevelOrder(SemiSplayTree<Integer> root) {
         System.out.println("size = " + root.size() + "\n");
         System.out.println("depth = " + root.depth() + "\n");
         if (root == null)
@@ -86,16 +105,17 @@ public class TreeTest {
                 break;
 
             while (nodeCount > 0) {
-                SemiSplayTree node = q.peek();
-                System.out.print(node.value + " ");
+                SemiSplayTree<Integer> node = q.peek();
+                System.out.print(node.getValue() + " ");
                 q.remove();
-                if (node.left != null)
-                    q.add(node.left);
-                if (node.right != null)
-                    q.add(node.right);
+                if (node.getLeft() != null)
+                    q.add(node.getLeft());
+                if (node.getRight() != null)
+                    q.add(node.getRight());
                 nodeCount--;
             }
             System.out.println();
         }
     }
+
 }

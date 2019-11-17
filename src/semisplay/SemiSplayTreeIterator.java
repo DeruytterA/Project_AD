@@ -1,4 +1,4 @@
-package Tree;
+package semisplay;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -11,7 +11,7 @@ public class SemiSplayTreeIterator<E extends Comparable<E>> implements Iterator<
         stack = new Stack<>();
         while (root != null) {
             stack.push(root);
-            root = root.left;
+            root = root.getLeft();
         }
     }
 
@@ -23,11 +23,11 @@ public class SemiSplayTreeIterator<E extends Comparable<E>> implements Iterator<
     @Override
     public E next() {
         SemiSplayTree<E> tree = stack.pop();
-        SemiSplayTree<E> rightTree = tree.right;
+        SemiSplayTree<E> rightTree = tree.getRight();
         while (rightTree != null) {
             stack.push(rightTree);
-            rightTree = rightTree.left;
+            rightTree = rightTree.getLeft();
         }
-        return tree.value;
+        return tree.getValue();
     }
 }
