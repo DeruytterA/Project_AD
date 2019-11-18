@@ -26,26 +26,28 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     private int size;
 
     @Contract(pure = true)
-    public SemiSplayTree(@NotNull Integer splayGrootte) {
+    public SemiSplayTree(Integer splayGrootte) {
         assert (splayGrootte >= 3);
         size = 0;
         this.splayGrootte = splayGrootte;
     }
 
     @Contract(pure = true)
-    private SemiSplayTree(@NotNull E value, @NotNull Integer splayGrootte) {
+    private SemiSplayTree(E value, Integer splayGrootte) {
         this(splayGrootte);
         this.value = value;
         this.splayGrootte = splayGrootte;
     }
 
     @Contract(pure = true)
-    private SemiSplayTree(@NotNull E value, @NotNull SemiSplayTree<E> parent, @NotNull Integer splayGrootte) {
+    private SemiSplayTree(E value, SemiSplayTree<E> parent, Integer splayGrootte) {
         this(splayGrootte);
         this.parent = parent;
         this.value = value;
         this.splayGrootte = splayGrootte;
     }
+
+
 
     @Override
     public boolean add(E e) {
@@ -86,7 +88,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     @Override
-    public boolean contains(@NotNull E e) {
+    public boolean contains(E e) {
         int cmp;
         if (this.value != null) {
             cmp = e.compareTo(this.value);
@@ -94,6 +96,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             return false;
         }
         if (cmp == 0){
+            splay();
             return true;
         }
         if (cmp < 0){
@@ -111,9 +114,9 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     }
 
     @Override
-    public boolean remove(@NotNull E e) {
+    public boolean remove(E e) {
         int cmp;
-        if (this.value != null) {
+        if (this.value != null && e != null) {
             cmp = e.compareTo(this.value);
         }else {
             return false;
@@ -122,8 +125,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             removeThis();
             splay();
             return true;
-        }
-        if (cmp < 0) {
+        }else if (cmp < 0) {
             if (left != null) {
                 boolean done = left.remove(e);
                 if (done) {
@@ -133,18 +135,20 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             } else {
                 return false;
             }
-        }
-        if (right != null) {
-            boolean done = right.remove(e);
-            if (done) {
-                this.size--;
+        }else {
+            if (right != null) {
+                boolean done = right.remove(e);
+                if (done) {
+                    this.size--;
+                }
+                return done;
+            }else {
+                return false;
             }
-            return done;
         }
-        return false;
     }
 
-    private void removeChild(@NotNull SemiSplayTree<E> child) {
+    private void removeChild(SemiSplayTree<E> child) {
         if (child.equals(right)) right = null;
         if (child.equals(left)) left = null;
     }
@@ -207,17 +211,9 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         if (left != null) {
             depth_left = left.depth();
         }
-        System.out.println("diepte links:");
-        System.out.println(depth_left);
-        System.out.println("diepte rechts:");
-        System.out.println(depth_right);
         if (parent != null) {
-            System.out.println("return value:");
-            System.out.println(Math.max(depth_left, depth_right) + 1);
             return Math.max(depth_left, depth_right) + 1;
         } else {
-            System.out.println("Parent NULL return value:");
-            System.out.println(Math.max(depth_left, depth_right));
             return Math.max(depth_left, depth_right);
         }
     }
@@ -236,30 +232,47 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         return left;
     }
 
-    @Nullable
-    public SemiSplayTree<E> getParent() {
-        return parent;
-    }
-
     @Nullable public E getValue() {
         return value;
     }
 
+    public void setRight(SemiSplayTree<E> right) {
+        this.right = right;
+    }
+
+    public void setLeft(SemiSplayTree<E> left) {
+        this.left = left;
+    }
+
+    public void setParent(SemiSplayTree<E> parent) {
+        this.parent = parent;
+    }
+
+    public void setValue(E value) {
+        this.value = value;
+    }
+
+    public SemiSplayTree<E> getParent() {
+        return parent;
+    }
+
     public void splay(){
-        if (value == null){
+        //System.out.println("SPLAY -------------------------------------------------");
+        if (this.value == null){
             return;
         }
         E myValue = this.value;
         SemiSplayTree<E> highestNodeToSplay = this;
         boolean cantSplay = false;
         int i = 0;
+        //System.out.print(highestNodeToSplay.getValue() + " ");
         while (i < splayGrootte - 1){
-            highestNodeToSplay = highestNodeToSplay.parent;
-            if (highestNodeToSplay == null || highestNodeToSplay.value == null) {
+            highestNodeToSplay = highestNodeToSplay.getParent();
+            if (highestNodeToSplay == null || highestNodeToSplay.getValue() == null) {
                 cantSplay = true;
                 break;
             }
-            System.out.print(highestNodeToSplay.value + " ");
+            //System.out.print(highestNodeToSplay.getValue() + " ");
             i++;
         }
         System.out.println();
@@ -273,40 +286,49 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         SemiSplayTree<E> tussenSplayToGetElements = highestNodeToSplay;
         for (int j = 0; j < splayGrootte; j++) {
 
-            if (tussenSplayToGetElements == null || tussenSplayToGetElements.value == null){
+            if (tussenSplayToGetElements == null || tussenSplayToGetElements.getValue() == null){
                 return;
             }
 
-            int cmp = tussenSplayToGetElements.value.compareTo(myValue);
-            if (cmp < 0){
-                sortedListOfSplayElements[meestRechts] = tussenSplayToGetElements.value;
-                subTrees[meestRechts + 1] = tussenSplayToGetElements.right;
+            int cmp = tussenSplayToGetElements.getValue().compareTo(myValue);
+            if (cmp > 0){
+                sortedListOfSplayElements[meestRechts] = tussenSplayToGetElements.getValue();
+                subTrees[meestRechts + 1] = tussenSplayToGetElements.getRight();
                 meestRechts--;
-                tussenSplayToGetElements = tussenSplayToGetElements.left;
-            }else if (cmp > 0){
-                sortedListOfSplayElements[meestLinks] = tussenSplayToGetElements.value;
-                subTrees[meestLinks] = tussenSplayToGetElements.left;
+                tussenSplayToGetElements = tussenSplayToGetElements.getLeft();
+            }else if (cmp < 0){
+                sortedListOfSplayElements[meestLinks] = tussenSplayToGetElements.getValue();
+                subTrees[meestLinks] = tussenSplayToGetElements.getLeft();
                 meestLinks++;
-                tussenSplayToGetElements = tussenSplayToGetElements.right;
+                tussenSplayToGetElements = tussenSplayToGetElements.getRight();
             }else {
-                sortedListOfSplayElements[meestLinks] = tussenSplayToGetElements.value;
-                subTrees[meestLinks] = tussenSplayToGetElements.left;
-                subTrees[meestRechts + 1] = tussenSplayToGetElements.right;
+                sortedListOfSplayElements[meestLinks] = tussenSplayToGetElements.getValue();
+                subTrees[meestLinks] = tussenSplayToGetElements.getLeft();
+                subTrees[meestRechts + 1] = tussenSplayToGetElements.getRight();
                 break;
             }
         }
+        /*
+        System.out.println("sorted");
+        for (Object ob:sortedListOfSplayElements) {
+            E e = (E) ob;
+            System.out.print(e + " ");
+        }
+        System.out.println("myvalue: " + this.getValue());
+         */
         int added = 0;
         SemiSplayTree<E> perfecteBoom = createPerfectBinaryTree(added, subTrees, sortedListOfSplayElements, 0, sortedListOfSplayElements.length - 1).getKey();
-        if (highestNodeToSplay.parent == null){
-            highestNodeToSplay.value = perfecteBoom.value;
-            highestNodeToSplay.left = perfecteBoom.left;
-            highestNodeToSplay.right = perfecteBoom.right;
+        if (highestNodeToSplay.getParent() == null){
+            highestNodeToSplay.setValue(perfecteBoom.getValue());
+            highestNodeToSplay.setLeft(perfecteBoom.getLeft());
+            highestNodeToSplay.setRight(perfecteBoom.getRight());
         }else {
-            if (highestNodeToSplay.parent.right != null && highestNodeToSplay.parent.right.equals(highestNodeToSplay)){
-                highestNodeToSplay.parent.right = perfecteBoom;
-            }else{
-                highestNodeToSplay.parent.left = perfecteBoom;
+            if (highestNodeToSplay.getParent().getRight() != null && highestNodeToSplay.getParent().getRight().equals(highestNodeToSplay)){
+                highestNodeToSplay.getParent().setRight(perfecteBoom);
+            }else {
+                highestNodeToSplay.getParent().setLeft(perfecteBoom);
             }
+            perfecteBoom.setParent(highestNodeToSplay.getParent());
             highestNodeToSplay.splay();
         }
         size = calculateSize();
@@ -317,40 +339,56 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         E ditElement = (E) Elements[index];
         if (start == eind){
             SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement,splayGrootte);
-            parentTree.left = (SemiSplayTree<E>) subTrees[added];
-            if (parentTree.left != null){
-                parentTree.left.parent = parentTree;
+            parentTree.setLeft((SemiSplayTree<E>) subTrees[added]);
+            if (parentTree.getLeft() != null){
+                parentTree.getLeft().setParent(parentTree);
             }
             added++;
-            parentTree.right = (SemiSplayTree<E>) subTrees[added];
-            if (parentTree.right != null){
-                parentTree.right.parent = parentTree;
+            parentTree.setRight((SemiSplayTree<E>) subTrees[added]);
+            if (parentTree.getRight() != null){
+                parentTree.getRight().setParent(parentTree);
             }
             added++;
             return new Pair<>(parentTree, added);
         }else if (start+1 == eind){
             SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement,splayGrootte);
             SemiSplayTree<E> parentTree2 = new SemiSplayTree<>( (E) Elements[index+1],splayGrootte);
-            parentTree.right = parentTree2;
-            parentTree2.parent = parentTree;
-            parentTree.left =(SemiSplayTree<E>) subTrees[added];
-            parentTree.left.parent = parentTree;
+            parentTree.setRight(parentTree2);
+            parentTree2.setParent(parentTree);
+            parentTree.setLeft((SemiSplayTree<E>) subTrees[added]);
+            if (parentTree.getLeft() != null) {
+                parentTree.getLeft().setParent(parentTree);
+            }
             added++;
-            parentTree2.left = (SemiSplayTree<E>) subTrees[added];
-            parentTree2.left.parent = parentTree2;
+            parentTree2.setLeft((SemiSplayTree<E>) subTrees[added]);
+            if (parentTree2.getLeft() != null) {
+                parentTree2.getLeft().setParent(parentTree2);
+            }
             added++;
-            parentTree2.right = (SemiSplayTree<E>) subTrees[added];
-            parentTree2.right.parent = parentTree2;
+            parentTree2.setRight((SemiSplayTree<E>) subTrees[added]);
+            if (parentTree2.getRight() != null) {
+                parentTree2.getRight().setParent(parentTree2);
+            }
             added++;
             return new Pair<>(parentTree, added);
         }
         SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement,splayGrootte);
         Pair<SemiSplayTree<E>, Integer> leftPair = createPerfectBinaryTree(added, subTrees, Elements, start,index - 1);
+
+        assert leftPair.getKey().getRight() == null || (leftPair.getKey().getRight().getParent() != null);
+        assert leftPair.getKey().getLeft() == null || (leftPair.getKey().getLeft().getParent() != null);
+
         Pair<SemiSplayTree<E>, Integer> rightPair = createPerfectBinaryTree(leftPair.getValue(), subTrees, Elements,index + 1, eind);
-        parentTree.right = rightPair.getKey();
-        parentTree.left = leftPair.getKey();
-        parentTree.right.parent = parentTree;
-        parentTree.left.parent = parentTree;
+
+        assert rightPair.getKey().getRight() == null || (rightPair.getKey().getRight().getParent() != null);
+        assert rightPair.getKey().getLeft() == null || (rightPair.getKey().getLeft().getParent() != null);
+
+        parentTree.setRight(rightPair.getKey());
+        parentTree.setLeft(leftPair.getKey());
+        assert parentTree.getRight() != null;
+        parentTree.getRight().setParent(parentTree);
+        assert parentTree.getLeft() != null;
+        parentTree.getLeft().setParent(parentTree);
         return new Pair<>(parentTree, rightPair.getValue());
     }
 
