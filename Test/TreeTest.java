@@ -2,11 +2,6 @@ import semisplay.SemiSplayTree;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-
 public class TreeTest {
 
     @Test
@@ -26,24 +21,19 @@ public class TreeTest {
         Integer list[] = {16, 8, 24, 4, 12, 20, 28, 2, 6, 10, 14, 18, 22, 26, 30, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31};
 
         for (Integer integer : list) {
+            System.out.println("tree size: " + tree.size() + " number added: " + integer);
             tree.add(integer);
         }
-
-        Integer newlist[] = new Integer[tree.size()];
-        Iterator<Integer> iterator = tree.iterator();
-        int i = 0;
-
-        while (iterator.hasNext()) {
-            newlist[i] = iterator.next();
-            i++;
-        }
-
-        for (Integer integer : newlist) {
-            System.out.println(integer);
+        System.out.println("remove");
+        for (Integer integer : list) {
+            System.out.println(tree.size());
             tree.remove(integer);
         }
-
+        tree.add(1);
+        Assert.assertEquals(1, tree.size());
+        tree.remove(1);
         Assert.assertEquals(0, tree.size());
+
     }
 
     @Test
@@ -104,7 +94,6 @@ public class TreeTest {
         for (int i = 1; i < 32; i++) {
             Assert.assertTrue("tree must contain "+ i,tree.contains(i));
         }
-
     }
 
     @Test
@@ -119,18 +108,41 @@ public class TreeTest {
         }
         for (int i = 0; i < list.length; i += 2) {
             Assert.assertTrue("tree must contain " + i, tree.contains(i));
-            System.out.println("remove " + i);
+            //System.out.println("remove " + i);
             tree.remove(i);
         }
         for (int i = 1; i < list.length; i += 2){
             Assert.assertTrue("tree must contain " + i, tree.contains(i));
-            System.out.println("remove " + i);
+            //System.out.println("remove " + i);
             tree.remove(i);
         }
-        for (Integer i:tree) {
-            System.out.println(i);
-        }
-        Assert.assertEquals(0, tree.size());
     }
 
+    @Test
+    public void sizeTest(){
+        SemiSplayTree<Integer> tree = new SemiSplayTree<>(3);
+        Assert.assertEquals(0, tree.size());
+        tree.add(1);
+        Assert.assertEquals(1, tree.size());
+        tree.remove(1);
+        Assert.assertEquals(0, tree.size());
+        tree.add(1);
+        Assert.assertEquals(1, tree.size());
+        tree.add(2);
+        Assert.assertEquals(2, tree.size());
+        tree.add(3);
+        Assert.assertEquals(3, tree.size());
+    }
+
+    @Test
+    public void containTest2(){
+        SemiSplayTree<Integer> tree = new SemiSplayTree<>(3);
+        Assert.assertFalse(tree.contains(1));
+        tree.add(1);
+        Assert.assertTrue(tree.contains(1));
+        tree.add(2);
+        Assert.assertTrue(tree.contains(1) && tree.contains(2));
+        tree.add(3);
+        Assert.assertTrue(tree.contains(1) && tree.contains(2) && tree.contains(3));
+    }
 }
