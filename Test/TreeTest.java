@@ -26,10 +26,13 @@ public class TreeTest {
         }
         System.out.println("remove");
         for (Integer integer : list) {
-            System.out.println(tree.size());
-            tree.remove(integer);
+            boolean bool = tree.remove(integer);
+            System.out.println(tree.size() + " : " + Boolean.toString(bool));
         }
+        System.out.println(tree.size());
         tree.add(1);
+        System.out.println(tree.getValue());
+        System.out.println(tree.size());
         Assert.assertEquals(1, tree.size());
         tree.remove(1);
         Assert.assertEquals(0, tree.size());

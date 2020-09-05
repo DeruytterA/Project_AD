@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public class SemiSplayTreeIterator<E extends Comparable<E>> implements Iterator<E> {
 
-    private Stack<SemiSplayTree<E>> stack;
+    private final Stack<SemiSplayTree<E>> stack;
 
     SemiSplayTreeIterator(SemiSplayTree<E> root) {
         stack = new Stack<>();
