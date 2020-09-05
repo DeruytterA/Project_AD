@@ -3,33 +3,33 @@ package semisplay;
 public interface SearchTree<E extends Comparable<E>> extends Iterable<E> {
 
     /**
-     * Voeg de gegeven sleutel toe aan de boom als deze er nog niet in zit.
+     * Adds a key to the SearchTree if that key was not present.
      *
-     * @return true als de sleutel effectief toegevoegd werd.
+     * @return true if the key was actually added.
      */
     boolean add(E e);
 
     /**
-     * Zoek de gegeven sleutel op in de boom.
+     * Search a key in the SearchTree.
      *
-     * @return true als de sleutel gevonden werd.
+     * @return true if the key was found.
      */
     boolean contains(E e);
 
     /**
-     * Verwijder de gegeven sleutel uit de boom.
+     * Delete a key from the SearchTree.
      *
-     * @return true als de sleutel gevonden en verwijderd werd.
+     * @return true if the key was found and deleted.
      */
     boolean remove(E e);
 
     /**
-     * @return het aantal sleutels in de boom.
+     * @return the amount of keys in the SearchTree.
      */
     int size();
 
     /**
-     * @return de diepte van de boom.
+     * @return the depth of the SearchTree.
      */
     int depth();
 
