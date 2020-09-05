@@ -6,56 +6,88 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 
+/**
+ *
+ * A simple implementation of a SemiSplayTree.
+ * Pay attention when using this because some functions can give StackOverflow errors
+ * if the depth of the tree is too great.
+ *
+ * @param <E> The type that will be stored in the SemiSplayTree
+ */
 public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
 
+    /**
+     * The right subtree, this can be a null pointer if there is none.
+     */
     @Nullable
     private SemiSplayTree<E> right;
 
+    /**
+     * The left subtree, this can be a null pointer if there is none.
+     */
     @Nullable
     private SemiSplayTree<E> left;
 
+    /**
+     * The parent of this subtree, this can be null if this object is the root.
+     */
     @Nullable
     private SemiSplayTree<E> parent;
 
+    /**
+     * The value of the root of this subtree.
+     */
     @Nullable
     private E value;
 
+    /**
+     * The size with which this class is going to splay.
+     * It is not recommended but this can be different within the subtrees.
+     */
     @NotNull
-    private Integer splayGrootte;
+    private Integer splaySize;
 
+    /**
+     * The size of the subtree, this node included.
+     */
     private int size;
 
+    /**
+     * Constructor for this class which only takes the splaySize.
+     * This is the bare minimum for this class to function.
+     * @param splaySize - The size with wich we are going to splay.
+     */
     @Contract(pure = true)
     public SemiSplayTree(
-            @NotNull Integer splayGrootte
+            @NotNull Integer splaySize
     ) {
-        assert (splayGrootte >= 3);
+        assert (splaySize >= 3);
         size = 0;
-        this.splayGrootte = splayGrootte;
+        this.splaySize = splaySize;
     }
-
+    
     @Contract(pure = true)
     private SemiSplayTree(
             @Nullable E value,
-            @NotNull Integer splayGrootte
+            @NotNull Integer splaySize
     ) {
-        this(splayGrootte);
+        this(splaySize);
         this.size = 1;
         this.value = value;
-        this.splayGrootte = splayGrootte;
+        this.splaySize = splaySize;
     }
 
     @Contract(pure = true)
     private SemiSplayTree(
             @Nullable E value,
             @Nullable SemiSplayTree<E> parent,
-            @NotNull Integer splayGrootte
+            @NotNull Integer splaySize
     ) {
-        this(splayGrootte);
+        this(splaySize);
         this.size = 1;
         this.parent = parent;
         this.value = value;
-        this.splayGrootte = splayGrootte;
+        this.splaySize = splaySize;
     }
 
     @Override
@@ -69,7 +101,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         int cmp = e.compareTo(this.value);
         if (cmp < 0) {
             if (this.left == null) {
-                this.left = new SemiSplayTree<>(e, this, splayGrootte);
+                this.left = new SemiSplayTree<>(e, this, splaySize);
                 this.left.splay();
                 if (parent == null) {
                     size++;
@@ -84,7 +116,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             }
         } else if (cmp > 0) {
             if (this.right == null) {
-                this.right = new SemiSplayTree<>(e, this, splayGrootte);
+                this.right = new SemiSplayTree<>(e, this, splaySize);
                 this.right.splay();
                 if (parent == null) {
                     size++;
@@ -288,7 +320,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         E myValue = this.value;
         SemiSplayTree<E> highestNodeToSplay = this;
         int i = 0;
-        while (i < splayGrootte - 1) {
+        while (i < splaySize - 1) {
             highestNodeToSplay = highestNodeToSplay.getParent();
             if (highestNodeToSplay == null || highestNodeToSplay.getValue() == null) {
                 return;
@@ -296,14 +328,14 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             i++;
         }
 
-        Object[] sortedListOfSplayElements = new Object[splayGrootte];
-        Object[] subTrees = new Object[splayGrootte + 1];
+        Object[] sortedListOfSplayElements = new Object[splaySize];
+        Object[] subTrees = new Object[splaySize + 1];
 
         int meestLinks = 0;
-        int meestRechts = splayGrootte - 1;
+        int meestRechts = splaySize - 1;
 
         SemiSplayTree<E> tussenSplayToGetElements = highestNodeToSplay;
-        for (int j = 0; j < splayGrootte; j++) {
+        for (int j = 0; j < splaySize; j++) {
 
             if (tussenSplayToGetElements == null || tussenSplayToGetElements.getValue() == null) {
                 return;
@@ -355,7 +387,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         int index = start + (end - start) / 2;
         E ditElement = (E) elements[index];
         if (start == end) {
-            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splayGrootte);
+            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splaySize);
             SemiSplayTree<E> left = (SemiSplayTree<E>) subTrees[added];
             added++;
             SemiSplayTree<E> right = (SemiSplayTree<E>) subTrees[added];
@@ -363,8 +395,8 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             setChildren(parentTree, left, right);
             return new Pair<>(parentTree, added);
         } else if (start + 1 == end) {
-            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splayGrootte);
-            SemiSplayTree<E> parentTree2 = new SemiSplayTree<>((E) elements[index + 1], splayGrootte);
+            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splaySize);
+            SemiSplayTree<E> parentTree2 = new SemiSplayTree<>((E) elements[index + 1], splaySize);
             SemiSplayTree<E> left1 = (SemiSplayTree<E>) subTrees[added];
             added++;
             SemiSplayTree<E> left2 = (SemiSplayTree<E>) subTrees[added];
@@ -375,7 +407,7 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
             setChildren(parentTree, left1, parentTree2);
             return new Pair<>(parentTree, added);
         } else {
-            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splayGrootte);
+            SemiSplayTree<E> parentTree = new SemiSplayTree<>(ditElement, splaySize);
 
             Pair<SemiSplayTree<E>, Integer> leftPair =
                     createPerfectBinaryTree(added, subTrees, elements, start, index - 1);
