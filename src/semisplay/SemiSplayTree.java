@@ -55,7 +55,8 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
     /**
      * Constructor for this class which only takes the splaySize.
      * This is the bare minimum for this class to function.
-     * @param splaySize - The size with wich we are going to splay.
+     *
+     * @param splaySize - The size with which we are going to splay.
      */
     @Contract(pure = true)
     public SemiSplayTree(
@@ -65,7 +66,14 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         size = 0;
         this.splaySize = splaySize;
     }
-    
+
+    /**
+     * Constructor for this class which takes the splaySize and an initial value.
+     * This is the actually just a node with a value.
+     *
+     * @param value     - The value of the root of the tree.
+     * @param splaySize - The size with which we are going to splay.
+     */
     @Contract(pure = true)
     private SemiSplayTree(
             @Nullable E value,
@@ -77,17 +85,23 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         this.splaySize = splaySize;
     }
 
+    /**
+     * Constructor for this class which takes the splaySize, an initial value and a parent.
+     * This is the exact same as the constructor above, except for the
+     *
+     * @param value     - The value of this node of the tree.
+     * @param parent    - The parent of this node of the tree.
+     * @param splaySize - The size with which we are going to splay.
+     */
     @Contract(pure = true)
     private SemiSplayTree(
             @Nullable E value,
             @Nullable SemiSplayTree<E> parent,
             @NotNull Integer splaySize
     ) {
-        this(splaySize);
+        this(value, splaySize);
         this.size = 1;
         this.parent = parent;
-        this.value = value;
-        this.splaySize = splaySize;
     }
 
     @Override
