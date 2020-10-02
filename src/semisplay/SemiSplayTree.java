@@ -104,6 +104,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         this.parent = parent;
     }
 
+    /**
+     * Add an element to this tree.
+     *
+     * @param e - The element that needs to be added.
+     * @return - True if the element could be added, False otherwise.
+     */
     @Override
     public boolean add(E e) {
         if (value == null) {
@@ -148,6 +154,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         }
     }
 
+    /**
+     * Check if an element is present in this tree.
+     *
+     * @param e - The element that needs to be checked.
+     * @return - True if present, False otherwise.
+     */
     @Override
     public boolean contains(E e) {
         int cmp;
@@ -174,6 +186,12 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         }
     }
 
+    /**
+     * Remove an element from this tree.
+     *
+     * @param e - The element that needs to be removed.
+     * @return - True if it was found and removed, False otherwise.
+     */
     @Override
     public boolean remove(E e) {
         int cmp;
@@ -256,11 +274,22 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         return this.value;
     }
 
+    /**
+     * Gives the size of the subtree.
+     *
+     * @return - the int value of the size.
+     */
     @Override
     public int size() {
         return this.size;
     }
 
+    /**
+     * Gives the depth of the subtree recursively.
+     * This function can give a stackOverflow exception if the tree is too deep.
+     *
+     * @return - The depth of the tree.
+     */
     @Override
     public int depth() {
         int depth_right = 0;
@@ -278,18 +307,15 @@ public class SemiSplayTree<E extends Comparable<E>> implements SearchTree<E> {
         }
     }
 
+    /**
+     * Gives an iterator that can be used to iterate over all the elements of the tree.
+     *
+     * @return - The Iterator object.
+     */
     @NotNull
     @Override
     public Iterator<E> iterator() {
         return new SemiSplayTreeIterator<>(this);
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
     }
 
     @Nullable
